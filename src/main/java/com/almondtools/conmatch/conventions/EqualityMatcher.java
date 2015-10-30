@@ -39,10 +39,10 @@ public class EqualityMatcher<T> extends TypeSafeDiagnosingMatcher<T> {
 		description.appendText("- object should equal itself\n");
 		description.appendText("and special contrains given:");
 		for (T element : equals) {
-			description.appendText("- should equal ").appendValue(element).appendText("\n");
+			description.appendText("\n- should equal ").appendValue(element);
 		}
 		for (T element : notEquals) {
-			description.appendText("- should not equal ").appendValue(element).appendText("\n");
+			description.appendText("\n- should not equal ").appendValue(element);
 		}
 	}
 
