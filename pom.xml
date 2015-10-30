@@ -147,4 +147,5 @@
 			</build>
 		</profile>
 	</profiles>
+	<description>A hamcrest matcher library</description>
 </project>
