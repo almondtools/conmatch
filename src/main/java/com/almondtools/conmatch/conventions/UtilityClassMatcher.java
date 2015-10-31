@@ -22,9 +22,9 @@ public class UtilityClassMatcher extends TypeSafeDiagnosingMatcher<Class<?>> {
 
 	@Override
 	public void describeTo(Description description) {
-		description.appendText("should be declared final\n");
-		description.appendText("and have a private default constructor doing nothing\n");
-		description.appendText("and have only static methods");
+		description.appendText("should be declared final");
+		description.appendText("\nand have a private default constructor doing nothing");
+		description.appendText("\nand have only static methods");
 	}
 
 	@Override

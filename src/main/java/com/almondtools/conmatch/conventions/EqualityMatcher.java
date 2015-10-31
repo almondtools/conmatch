@@ -34,10 +34,10 @@ public class EqualityMatcher<T> extends TypeSafeDiagnosingMatcher<T> {
 
 	@Override
 	public void describeTo(Description description) {
-		description.appendText("should satisfy common equality contraints as\n");
-		description.appendText("- object should not equal null or object of a different class\n");
-		description.appendText("- object should equal itself\n");
-		description.appendText("and special contrains given:");
+		description.appendText("should satisfy common equality contraints as");
+		description.appendText("\n- object should not equal null or object of a different class");
+		description.appendText("\n- object should equal itself");
+		description.appendText("\nand special contrains given:");
 		for (T element : equals) {
 			description.appendText("\n- should equal ").appendValue(element);
 		}
