@@ -6,6 +6,7 @@
 	<artifactId>conmatch</artifactId>
 	<version>0.1.2-SNAPSHOT</version>
 	<name>${project.groupId}:${project.artifactId}</name>
+	<description>A hamcrest matcher library</description>
 	<url>https://github.com/almondtools/conmatch</url>
 
 
@@ -146,5 +147,4 @@
 			</build>
 		</profile>
 	</profiles>
-	<description>A hamcrest matcher library</description>
 </project>
