@@ -1,5 +1,7 @@
 package com.almondtools.conmatch.strings;
 
+import static java.util.regex.Pattern.DOTALL;
+
 import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -34,7 +36,7 @@ public class WildcardStringMatcher extends TypeSafeMatcher<String> {
 				buffer.append(Pattern.quote(nextToken));
 			}
 		}
-		Pattern p = Pattern.compile(buffer.toString());
+		Pattern p = Pattern.compile(buffer.toString(), DOTALL);
 		Matcher m = p.matcher(item);
 		return m.find();
 	}
