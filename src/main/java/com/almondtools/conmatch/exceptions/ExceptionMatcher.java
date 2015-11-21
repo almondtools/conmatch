@@ -9,8 +9,8 @@ import org.hamcrest.TypeSafeDiagnosingMatcher;
 public class ExceptionMatcher<T extends Throwable> extends TypeSafeDiagnosingMatcher<T> {
 
 	private Class<T> clazz;
-	private Matcher<String> message;
-	private Matcher<Throwable> cause;
+	private Matcher<? super String> message;
+	private Matcher<? extends Throwable> cause;
 
 	public ExceptionMatcher(Class<T> clazz) {
 		this.clazz = clazz;
@@ -25,7 +25,7 @@ public class ExceptionMatcher<T extends Throwable> extends TypeSafeDiagnosingMat
 		return this;
 	}
 
-	public ExceptionMatcher<T> withMessage(Matcher<String> message) {
+	public ExceptionMatcher<T> withMessage(Matcher<? super String> message) {
 		this.message = message;
 		return this;
 	}
@@ -35,7 +35,7 @@ public class ExceptionMatcher<T extends Throwable> extends TypeSafeDiagnosingMat
 		return this;
 	}
 
-	public ExceptionMatcher<T> withCause(Matcher<Throwable> cause) {
+	public ExceptionMatcher<T> withCause(Matcher<? extends Throwable> cause) {
 		this.cause = cause;
 		return this;
 	}
