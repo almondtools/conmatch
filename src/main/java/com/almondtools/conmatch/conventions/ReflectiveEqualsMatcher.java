@@ -1,8 +1,14 @@
 package com.almondtools.conmatch.conventions;
 
+import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
+
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
 import java.util.Set;
 
@@ -40,20 +46,13 @@ public class ReflectiveEqualsMatcher<T> extends TypeSafeMatcher<T> {
 				}
 				Object left = current.left;
 				Object right = current.right;
-				Field[] fields = current.clazz.getFields();
-				for (Field field : fields) {
+				for (Field field : fields(current.clazz)) {
 					Object leftField = field.get(left);
 					Object rightField = field.get(right);
-					if (leftField == null && rightField == null) {
-						continue;
-					} else if (leftField == null) {
+					try {
+						todo.addAll(compare(leftField, rightField));
+					} catch (ComparisonException e) {
 						return false;
-					} else if (rightField == null) {
-						return false;
-					} else if (leftField.getClass() != rightField.getClass()) {
-						return false;
-					} else {
-						todo.add(new Comparison(leftField.getClass(), leftField, rightField));
 					}
 				}
 			}
@@ -61,6 +60,60 @@ public class ReflectiveEqualsMatcher<T> extends TypeSafeMatcher<T> {
 		} catch (ReflectiveOperationException e) {
 			return false;
 		}
+	}
+
+	private List<Comparison> compare(Object leftField, Object rightField) throws ComparisonException {
+		if (leftField == null && rightField == null) {
+			return emptyList();
+		} else if (leftField == null) {
+			throw new ComparisonException();
+		} else if (rightField == null) {
+			throw new ComparisonException();
+		} else if (leftField.getClass() != rightField.getClass()) {
+			throw new ComparisonException();
+		} else {
+			Class<?> clazz = leftField.getClass();
+			if (isBaseType(clazz)) {
+				if (!leftField.equals(rightField)) {
+					throw new ComparisonException();
+				}
+				return emptyList();
+			} else if (clazz.isArray()) {
+				List<Comparison> todo = new ArrayList<>();
+				if (Array.getLength(leftField) != Array.getLength(rightField)) {
+					throw new ComparisonException();
+				}
+				int length = Array.getLength(leftField);
+				for (int i = 0; i < length; i++) {
+					Object leftItem = Array.get(leftField, i);
+					Object rightItem = Array.get(rightField, i);
+					todo.addAll(compare(leftItem, rightItem));
+				}
+				return todo;
+			} else {
+				return asList(new Comparison(clazz, leftField, rightField));
+			}
+		}
+	}
+
+	public boolean isBaseType(Class<?> clazz) {
+		return clazz.isPrimitive()
+			|| Number.class.isAssignableFrom(clazz)
+			|| Character.class.isAssignableFrom(clazz)
+			|| String.class.isAssignableFrom(clazz)
+			|| clazz == Object.class;
+	}
+
+	private List<Field> fields(Class<?> clazz) {
+		List<Field> fields = new ArrayList<>();
+		while (clazz != null && clazz != Object.class) {
+			for (Field field : clazz.getDeclaredFields()) {
+				field.setAccessible(true);
+				fields.add(field);
+			}
+			clazz = clazz.getSuperclass();
+		}
+		return fields;
 	}
 
 	public static <T> ReflectiveEqualsMatcher<T> reflectiveEqualTo(T object) {
@@ -101,5 +154,9 @@ public class ReflectiveEqualsMatcher<T> extends TypeSafeMatcher<T> {
 				&& this.right == that.right;
 		}
 
+	}
+	
+	private static class ComparisonException extends Exception {
+		
 	}
 }
