@@ -6,7 +6,7 @@ import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeDiagnosingMatcher;
 
-public class ExceptionMatcher<T extends Throwable> extends TypeSafeDiagnosingMatcher<T> {
+public class ExceptionMatcher<T extends Throwable> extends TypeSafeDiagnosingMatcher<Throwable> {
 
 	private Class<T> clazz;
 	private Matcher<? super String> message;
@@ -58,7 +58,7 @@ public class ExceptionMatcher<T extends Throwable> extends TypeSafeDiagnosingMat
 	}
 
 	@Override
-	protected boolean matchesSafely(T item, Description mismatchDescription) {
+	protected boolean matchesSafely(Throwable item, Description mismatchDescription) {
 		if (item == null) {
 			mismatchDescription.appendText("is null");
 			return false;
