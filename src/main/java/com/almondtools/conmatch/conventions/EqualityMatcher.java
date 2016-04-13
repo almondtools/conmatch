@@ -58,8 +58,11 @@ public class EqualityMatcher<T> extends TypeSafeDiagnosingMatcher<T> {
 			return false;
 		}
 		for (T element : equals) {
-			if (!item.equals(element) || !element.equals(item) || item.hashCode() != element.hashCode()) {
+			if (!item.equals(element) || !element.equals(item)) {
 				mismatchDescription.appendText("should equal ").appendValue(element).appendText(", was ").appendValue(item);
+				return false;
+			} else if (item.hashCode() != element.hashCode()) {
+				mismatchDescription.appendText("should have same hashcode: ").appendValue(element).appendText(", was ").appendValue(item);
 				return false;
 			}
 		}
