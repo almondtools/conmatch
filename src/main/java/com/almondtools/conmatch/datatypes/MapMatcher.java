@@ -4,7 +4,6 @@ import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.IsNull.nullValue;
 
 import java.util.AbstractMap;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -31,15 +30,15 @@ public class MapMatcher<K,V> extends TypeSafeMatcher<Map<K,V>>{
 	}
 
 	public MapMatcher<K,V> entry(K key, V value) {
-		return entry(match(key, this.key), match(value, this.value));
+		return entry(matchKey(key), matchValue(value));
 	}
 
 	public MapMatcher<K,V> entry(Matcher<K> key, V value) {
-		return entry(key, match(value, this.value));
+		return entry(key, matchValue(value));
 	}
 
 	public MapMatcher<K,V> entry(K key, Matcher<V> value) {
-		return entry(match(key, this.key), value);
+		return entry(matchKey(key), value);
 	}
 
 	public MapMatcher<K,V> entry(Matcher<K> key, Matcher<V> value) {
@@ -47,14 +46,22 @@ public class MapMatcher<K,V> extends TypeSafeMatcher<Map<K,V>>{
 		return this;
 	}
 	
-	private <T> Matcher<T> match(T element, Class<T> clazz) {
+	private Matcher<K> matchKey(K element) {
 		if (element == null) {
-			return nullValue(clazz);
+			return nullValue(key);
 		} else {
 			return equalTo(element);
 		}
 	}
 
+	private Matcher<V> matchValue(V element) {
+		if (element == null) {
+			return nullValue(value);
+		} else {
+			return equalTo(element);
+		}
+	}
+	
 	@Override
 	public void describeTo(Description description) {
 		description.appendValue(entries);
@@ -63,40 +70,39 @@ public class MapMatcher<K,V> extends TypeSafeMatcher<Map<K,V>>{
 	@Override
 	protected void describeMismatchSafely(Map<K, V> item, Description mismatchDescription) {
 		List<Entry<Matcher<K>, Matcher<V>>> unmatched = new LinkedList<>(entries.entrySet());
-		List<Entry<Matcher<K>, Matcher<V>>> matched = new LinkedList<>();
 		List<Entry<K, V>> notfound = new LinkedList<>();
 		
 		for (Entry<K, V> entry : item.entrySet()) {
 		
-			boolean success = tryMatch(unmatched, matched, entry);
+			boolean success = tryMatch(unmatched, entry);
 			if (!success) {
 				notfound.add(new AbstractMap.SimpleEntry<>(entry.getKey(), entry.getValue()));
 			}
 		}
 		
 		if (!unmatched.isEmpty()) {
-			mismatchDescription.appendText("missing entries ").appendValue(map(unmatched));
+			mismatchDescription.appendText("missing entries ").appendValue(toMap(unmatched));
 		}
 		if (!unmatched.isEmpty() && !notfound.isEmpty()) {
 			mismatchDescription.appendText(", ");
 		}
 		if (!notfound.isEmpty()) {
-			mismatchDescription.appendText("unmatched entries ").appendValue(mapValues(notfound));
+			mismatchDescription.appendText("unmatched entries ").appendValue(toDescriptionMap(notfound));
 		}
 	}
 
-	private Map<Matcher<K>, Matcher<V>> map(List<Entry<Matcher<K>, Matcher<V>>> entries) {
-		Map<Matcher<K>, Matcher<V>> map = new HashMap<>();
+	private Map<Matcher<K>, Matcher<V>> toMap(List<Entry<Matcher<K>, Matcher<V>>> entries) {
+		Map<Matcher<K>, Matcher<V>> map = new LinkedHashMap<>();
 		for (Entry<Matcher<K>, Matcher<V>> entry : entries) {
 			map.put(entry.getKey(), entry.getValue());
 		}
 		return map;
 	}
 
-	private Map<String, String> mapValues(List<Entry<K, V>> entries) {
+	private Map<String, String> toDescriptionMap(List<Entry<K, V>> entries) {
 		Matcher<K> keyMatcher = bestKeyMatcher();
 		Matcher<V> valueMatcher = bestValueMatcher();
-		Map<String, String> map = new HashMap<>();
+		Map<String, String> map = new LinkedHashMap<>();
 		for (Entry<K, V> entry : entries) {
 			String key = descriptionOf(keyMatcher, entry.getKey());
 			String value = descriptionOf(valueMatcher, entry.getValue());
@@ -132,11 +138,10 @@ public class MapMatcher<K,V> extends TypeSafeMatcher<Map<K,V>>{
 	@Override
 	protected boolean matchesSafely(Map<K, V> item) {
 		List<Entry<Matcher<K>, Matcher<V>>> unmatched = new LinkedList<>(entries.entrySet());
-		List<Entry<Matcher<K>, Matcher<V>>> matched = new LinkedList<>();
 		
 		for (Entry<K, V> entry : item.entrySet()) {
 		
-			boolean success = tryMatch(unmatched, matched, entry);
+			boolean success = tryMatch(unmatched, entry);
 			if (!success) {
 				return false;
 			}
@@ -145,7 +150,7 @@ public class MapMatcher<K,V> extends TypeSafeMatcher<Map<K,V>>{
 		return unmatched.isEmpty();
 	}
 
-	private boolean tryMatch(List<Entry<Matcher<K>, Matcher<V>>> unmatched, List<Entry<Matcher<K>, Matcher<V>>> matched, Entry<K, V> entry) {
+	private boolean tryMatch(List<Entry<Matcher<K>, Matcher<V>>> unmatched, Entry<K, V> entry) {
 		K key = entry.getKey();
 		V value = entry.getValue();
 
@@ -154,7 +159,6 @@ public class MapMatcher<K,V> extends TypeSafeMatcher<Map<K,V>>{
 			Entry<Matcher<K>, Matcher<V>> matcher = matchers.next();
 			if (matcher.getKey().matches(key) && matcher.getValue().matches(value)) {
 				matchers.remove();
-				matched.add(matcher);
 				return true;
 			}
 		}

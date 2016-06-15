@@ -1,6 +1,7 @@
 package com.almondtools.conmatch.datatypes;
 
 import static com.almondtools.conmatch.datatypes.MapMatcher.containsEntries;
+import static com.almondtools.conmatch.datatypes.MapMatcher.noEntries;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
@@ -29,7 +30,7 @@ public class MapMatcherTest {
 		Map<String, String> map = map();
 
 		assertThat(containsEntries(String.class, String.class).matchesSafely(map), is(true));
-		assertThat(MapMatcher.noEntries(String.class, String.class).matchesSafely(map), is(true));
+		assertThat(noEntries(String.class, String.class).matchesSafely(map), is(true));
 	}
 
 	@Test
