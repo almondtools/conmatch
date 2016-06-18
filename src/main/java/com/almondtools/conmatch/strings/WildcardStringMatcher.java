@@ -29,7 +29,7 @@ public class WildcardStringMatcher extends TypeSafeMatcher<String> {
 		while (t.hasMoreTokens()) {
 			String nextToken = t.nextToken();
 			if ("?".equals(nextToken)) {
-				buffer.append(".");
+				buffer.append(".?");
 			} else if ("*".equals(nextToken)) {
 				buffer.append(".*?");
 			} else {

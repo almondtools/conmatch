@@ -6,6 +6,8 @@ import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
 
+import com.almondtools.conmatch.util.SimpleClass;
+
 public class PrimitiveArrayMatcher<T> extends TypeSafeMatcher<T> {
 
 	private T array;
@@ -61,7 +63,7 @@ public class PrimitiveArrayMatcher<T> extends TypeSafeMatcher<T> {
 		} else if (!item.getClass().getComponentType().isPrimitive()) {
 			mismatchDescription.appendText("not a primitive array");
 		} else if (item.getClass() != array.getClass()) {
-			mismatchDescription.appendText("of type ").appendValue(item.getClass().getComponentType());
+			mismatchDescription.appendText("of type ").appendValue(new SimpleClass(item.getClass()));
 		} else {
 			mismatchDescription.appendText("with items ").appendValue(item);
 		}

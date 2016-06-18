@@ -1,10 +1,13 @@
 package com.almondtools.conmatch.exceptions;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.core.IsEqual.equalTo;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeDiagnosingMatcher;
+
+import com.almondtools.conmatch.util.SimpleClass;
 
 public class ExceptionMatcher<T extends Throwable> extends TypeSafeDiagnosingMatcher<Throwable> {
 
@@ -21,8 +24,7 @@ public class ExceptionMatcher<T extends Throwable> extends TypeSafeDiagnosingMat
 	}
 
 	public ExceptionMatcher<T> withMessage(String message) {
-		this.message = equalTo(message);
-		return this;
+		return withMessage(equalTo(message));
 	}
 
 	public ExceptionMatcher<T> withMessage(Matcher<? super String> message) {
@@ -30,9 +32,9 @@ public class ExceptionMatcher<T extends Throwable> extends TypeSafeDiagnosingMat
 		return this;
 	}
 
-	public ExceptionMatcher<T> withCause(Throwable cause) {
-		this.cause = equalTo(cause);
-		return this;
+	public ExceptionMatcher<T> withCause(Class<? extends Throwable> cause) {
+		Matcher<Throwable> causeMatcher = instanceOf(cause);
+		return withCause(causeMatcher);
 	}
 
 	public ExceptionMatcher<T> withCause(Matcher<? extends Throwable> cause) {
@@ -42,29 +44,19 @@ public class ExceptionMatcher<T extends Throwable> extends TypeSafeDiagnosingMat
 
 	@Override
 	public void describeTo(Description description) {
-		String prefix = "with ";
-		if (clazz != null) {
-			description.appendText(prefix).appendText("class ").appendValue(clazz.getSimpleName());
-			prefix = " and ";
-		}
+			description.appendText("of type ").appendValue(new SimpleClass(clazz));
 		if (message != null) {
-			description.appendText(prefix).appendText("message ").appendValue(message);
-			prefix = " and ";
+			description.appendText(" with message ").appendValue(message);
 		}
 		if (cause != null) {
-			description.appendText(prefix).appendText("cause ").appendValue(cause);
-			prefix = " and ";
+			description.appendText(" with cause ").appendValue(cause);
 		}
 	}
 
 	@Override
 	protected boolean matchesSafely(Throwable item, Description mismatchDescription) {
-		if (item == null) {
-			mismatchDescription.appendText("is null");
-			return false;
-		}
 		if (!clazz.isInstance(item)) {
-			mismatchDescription.appendText("found class ").appendValue(item.getClass().getSimpleName());
+			mismatchDescription.appendText("found class ").appendValue(new SimpleClass(item.getClass()));
 			return false;
 		}
 		if (message != null && !message.matches(item.getMessage())) {

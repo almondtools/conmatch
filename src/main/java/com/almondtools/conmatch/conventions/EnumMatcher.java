@@ -24,9 +24,8 @@ public class EnumMatcher extends TypeSafeDiagnosingMatcher<Class<? extends Enum<
 	@Override
 	public void describeTo(Description description) {
 		description.appendText("should be an enum");
-		description.appendText("\nand additional constraints:");
 		if (count != null) {
-			description.appendText("\n- number of elements should be ").appendValue(count);
+			description.appendText(" with number of elements ").appendValue(count);
 		}
 	}
 
