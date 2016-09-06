@@ -46,17 +46,23 @@ public class MapMatcher<K,V> extends TypeSafeMatcher<Map<K,V>>{
 		return this;
 	}
 	
+	@SuppressWarnings("unchecked")
 	private Matcher<K> matchKey(K element) {
 		if (element == null) {
 			return nullValue(key);
+		} else if (element instanceof Matcher<?>) {
+			return (Matcher<K>) element;
 		} else {
 			return equalTo(element);
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	private Matcher<V> matchValue(V element) {
 		if (element == null) {
 			return nullValue(value);
+		} else if (element instanceof Matcher<?>) {
+			return (Matcher<V>) element;
 		} else {
 			return equalTo(element);
 		}

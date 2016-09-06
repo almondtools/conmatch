@@ -49,6 +49,24 @@ public class MapMatcherTest {
 		assertThat(containsEntries(String.class, String.class).entry("08", equalTo("15")).entry("foo", equalTo("bar")).matchesSafely(map), is(true));
 	}
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@Test
+	public void testMatchesSafelyWithHiddenKeyMatcher() throws Exception {
+		Map<Object, String> map = (Map) map("foo", "bar", "08", "15");
+
+		assertThat(containsEntries(Object.class, String.class).entry((Object) equalTo("foo"), "bar").entry(equalTo("08"), "15").matchesSafely(map), is(true));
+		assertThat(containsEntries(Object.class, String.class).entry((Object) equalTo("08"), "15").entry(equalTo("foo"), "bar").matchesSafely(map), is(true));
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@Test
+	public void testMatchesSafelyWithHiddenValueMatcher() throws Exception {
+		Map<String, Object> map = (Map) map("foo", "bar", "08", "15");
+
+		assertThat(containsEntries(String.class, Object.class).entry("foo", (Object) equalTo("bar")).entry("08", equalTo("15")).matchesSafely(map), is(true));
+		assertThat(containsEntries(String.class, Object.class).entry("08", (Object) equalTo("15")).entry("foo", equalTo("bar")).matchesSafely(map), is(true));
+	}
+
 	@Test
 	public void testMatchesSafelyWithMixedMatcher() throws Exception {
 		Map<String, String> map = map("foo", "bar", "08", "15");
