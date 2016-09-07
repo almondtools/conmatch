@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.github.almondtools</groupId>
 	<artifactId>conmatch</artifactId>
-	<version>0.1.9-SNAPSHOT</version>
+	<version>0.1.9</version>
 	<name>${project.groupId}:${project.artifactId}</name>
 	<url>https://github.com/almondtools/conmatch</url>
 
@@ -27,7 +27,7 @@
 		<connection>scm:git:git@github.com:almondtools/conmatch.git</connection>
 		<developerConnection>scm:git:git@github.com:almondtools/conmatch.git</developerConnection>
 		<url>git@github.com:almondtools/conmatch.git</url>
-		<tag>HEAD</tag>
+		<tag>conmatch-0.1.9</tag>
 	</scm>
 	<distributionManagement>
 		<snapshotRepository>
