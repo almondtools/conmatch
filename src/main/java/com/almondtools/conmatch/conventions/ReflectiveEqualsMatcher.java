@@ -6,7 +6,9 @@ import static java.util.Collections.emptyList;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -88,6 +90,24 @@ public class ReflectiveEqualsMatcher<T> extends TypeSafeMatcher<T> {
 					Object leftItem = Array.get(leftField, i);
 					Object rightItem = Array.get(rightField, i);
 					todo.addAll(compare(leftItem, rightItem));
+				}
+				return todo;
+			} else if (Collection.class.isAssignableFrom(clazz)) {
+				List<Comparison> todo = new ArrayList<>();
+				Collection<?> left = (Collection<?>) leftField;
+				Collection<?> right = (Collection<?>) rightField;
+				if (left.size() != right.size()) {
+					throw new ComparisonException();
+				}
+				Iterator<?> li = left.iterator();
+				Iterator<?> ri = right.iterator();
+				while (li.hasNext() && ri.hasNext()) {
+					Object leftItem = li.next();
+					Object rightItem = ri.next();
+					todo.addAll(compare(leftItem, rightItem));
+				}
+				if (li.hasNext() || ri.hasNext()) {
+					throw new ComparisonException();
 				}
 				return todo;
 			} else {
