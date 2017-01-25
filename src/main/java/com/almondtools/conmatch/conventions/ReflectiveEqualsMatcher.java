@@ -74,8 +74,6 @@ public class ReflectiveEqualsMatcher<T> extends TypeSafeMatcher<T> {
 			throw new ComparisonException();
 		} else if (rightField == null) {
 			throw new ComparisonException();
-		} else if (leftField.getClass() != rightField.getClass()) {
-			throw new ComparisonException();
 		} else {
 			Class<?> clazz = leftField.getClass();
 			if (isBaseType(clazz)) {
@@ -113,6 +111,8 @@ public class ReflectiveEqualsMatcher<T> extends TypeSafeMatcher<T> {
 					throw new ComparisonException();
 				}
 				return todo;
+			} else if (leftField.getClass() != rightField.getClass()) {
+				throw new ComparisonException();
 			} else {
 				return asList(new Comparison(clazz, leftField, rightField));
 			}
