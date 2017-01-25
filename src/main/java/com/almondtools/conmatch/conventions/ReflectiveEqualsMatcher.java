@@ -49,6 +49,9 @@ public class ReflectiveEqualsMatcher<T> extends TypeSafeMatcher<T> {
 				Object left = current.left;
 				Object right = current.right;
 				for (Field field : fields(current.clazz)) {
+					if (field.isSynthetic()) {
+						continue;
+					}
 					Object leftField = field.get(left);
 					Object rightField = field.get(right);
 					try {
