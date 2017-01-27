@@ -20,9 +20,16 @@ import org.hamcrest.TypeSafeMatcher;
 public class ReflectiveEqualsMatcher<T> extends TypeSafeMatcher<T> {
 
 	private T object;
+	private Set<String> excluded;
 
 	public ReflectiveEqualsMatcher(T object) {
 		this.object = object;
+		this.excluded = new HashSet<>();
+	}
+	
+	public ReflectiveEqualsMatcher<T> excluding(String ... excludedFields) {
+		excluded.addAll(asList(excludedFields));
+		return this;
 	}
 
 	@Override
@@ -49,7 +56,7 @@ public class ReflectiveEqualsMatcher<T> extends TypeSafeMatcher<T> {
 				Object left = current.left;
 				Object right = current.right;
 				for (Field field : fields(current.clazz)) {
-					if (field.isSynthetic()) {
+					if (field.isSynthetic() || excluded.contains(field.getName())) {
 						continue;
 					}
 					Object leftField = field.get(left);
@@ -139,7 +146,7 @@ public class ReflectiveEqualsMatcher<T> extends TypeSafeMatcher<T> {
 		return fields;
 	}
 
-	public static <T> ReflectiveEqualsMatcher<T> reflectiveEqualTo(T object) {
+	public static <T> ReflectiveEqualsMatcher<? super T> reflectiveEqualTo(T object) {
 		return new ReflectiveEqualsMatcher<T>(object);
 	}
 
