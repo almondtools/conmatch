@@ -12,10 +12,12 @@ public class EqualityMatcher<T> extends TypeSafeDiagnosingMatcher<T> {
 	
 	private List<T> equals;
 	private List<T> notEquals;
+	private boolean toString;
 
 	public EqualityMatcher() {
 		this.equals = new ArrayList<>();
 		this.notEquals = new ArrayList<>();
+		this.toString = false;
 	}
 	
 	public static <T> EqualityMatcher<T> satisfiesDefaultEquality() {
@@ -29,6 +31,11 @@ public class EqualityMatcher<T> extends TypeSafeDiagnosingMatcher<T> {
 
 	public EqualityMatcher<T> andNotEqualTo(T element) {
 		this.notEquals.add(element);
+		return this;
+	}
+
+	public EqualityMatcher<T> includingToString() {
+		this.toString = true;
 		return this;
 	}
 
@@ -64,6 +71,9 @@ public class EqualityMatcher<T> extends TypeSafeDiagnosingMatcher<T> {
 			} else if (item.hashCode() != element.hashCode()) {
 				mismatchDescription.appendText("should have same hashcode: ").appendValue(element).appendText(", was ").appendValue(item);
 				return false;
+			} else if (toString && !item.toString().equals(element.toString())) {
+				mismatchDescription.appendText("should have same toString: ").appendValue(element.toString()).appendText(", was ").appendValue(item.toString());
+				return false;
 			}
 		}
 		
@@ -79,6 +89,8 @@ public class EqualityMatcher<T> extends TypeSafeDiagnosingMatcher<T> {
 			if (item.equals(element) || element.equals(item)) {
 				mismatchDescription.appendText("should not equal ").appendValue(element).appendText(", was ").appendValue(item);
 				return false;
+			} else {
+				element.hashCode();
 			}
 		}
 		return true;
