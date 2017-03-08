@@ -21,6 +21,7 @@ public class ArrayMatcher<T> extends TypeSafeMatcher<T[]> {
 
 	private Class<T> type;
 	private List<Matcher<T>> elements;
+	private boolean anyOrder;
 
 	public ArrayMatcher(Class<T> type) {
 		this.type = type;
@@ -72,7 +73,7 @@ public class ArrayMatcher<T> extends TypeSafeMatcher<T[]> {
 			List<T> items = collect(itemIterator);
 			matches.mismatch("found " + items.size() + " elements surplus " + toDescriptionSet(items));
 		}
-		
+
 		if (matches.containsMismatches()) {
 			mismatchDescription.appendText("mismatching elements ").appendDescriptionOf(matches);
 		}
@@ -126,16 +127,34 @@ public class ArrayMatcher<T> extends TypeSafeMatcher<T[]> {
 			return false;
 		}
 
-		Iterator<Matcher<T>> elementIterator = elements.iterator();
-		Iterator<? extends T> itemIterator = Arrays.asList(item).iterator();
-		while (elementIterator.hasNext() && itemIterator.hasNext()) {
-			Matcher<T> matcher = elementIterator.next();
-			T element = itemIterator.next();
-			if (!matcher.matches(element)) {
+		if (anyOrder) {
+			List<Matcher<T>> pending = new ArrayList<>(elements);
+			Iterator<? extends T> itemIterator = Arrays.asList(item).iterator();
+			nextItem: while (itemIterator.hasNext()) {
+				T element = itemIterator.next();
+				Iterator<Matcher<T>> elementIterator = pending.iterator();
+				while (elementIterator.hasNext()) {
+					Matcher<T> matcher = elementIterator.next();
+					if (matcher.matches(element)) {
+						elementIterator.remove();
+						continue nextItem;
+					}
+				}
 				return false;
 			}
+			return pending.isEmpty();
+		} else {
+			Iterator<Matcher<T>> elementIterator = elements.iterator();
+			Iterator<? extends T> itemIterator = Arrays.asList(item).iterator();
+			while (elementIterator.hasNext() && itemIterator.hasNext()) {
+				Matcher<T> matcher = elementIterator.next();
+				T element = itemIterator.next();
+				if (!matcher.matches(element)) {
+					return false;
+				}
+			}
+			return true;
 		}
-		return true;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -150,6 +169,11 @@ public class ArrayMatcher<T> extends TypeSafeMatcher<T[]> {
 			}
 		}
 		return set;
+	}
+
+	public ArrayMatcher<T> inAnyOrder() {
+		this.anyOrder = true;
+		return this;
 	}
 
 }
