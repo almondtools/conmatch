@@ -21,14 +21,21 @@ public class ReflectiveEqualsMatcher<T> extends TypeSafeMatcher<T> {
 
 	private T object;
 	private Set<String> excluded;
+	private Set<Class<?>> customBaseTypes;
 
 	public ReflectiveEqualsMatcher(T object) {
 		this.object = object;
 		this.excluded = new HashSet<>();
+		this.customBaseTypes = new HashSet<>();
 	}
-	
-	public ReflectiveEqualsMatcher<T> excluding(String ... excludedFields) {
+
+	public ReflectiveEqualsMatcher<T> excluding(String... excludedFields) {
 		excluded.addAll(asList(excludedFields));
+		return this;
+	}
+
+	public ReflectiveEqualsMatcher<T> withBaseTypes(Class<?>... classes) {
+		customBaseTypes.addAll(asList(classes));
 		return this;
 	}
 
@@ -55,6 +62,9 @@ public class ReflectiveEqualsMatcher<T> extends TypeSafeMatcher<T> {
 				}
 				Object left = current.left;
 				Object right = current.right;
+				if (left == right) {
+					continue;
+				}
 				for (Field field : fields(current.clazz)) {
 					if (field.isSynthetic() || excluded.contains(field.getName())) {
 						continue;
@@ -83,7 +93,7 @@ public class ReflectiveEqualsMatcher<T> extends TypeSafeMatcher<T> {
 			throw new ComparisonException();
 		} else {
 			Class<?> clazz = leftField.getClass();
-			if (isBaseType(clazz)) {
+			if (isBaseType(clazz) || isCustomBaseType(clazz)) {
 				if (!leftField.equals(rightField)) {
 					throw new ComparisonException();
 				}
@@ -126,12 +136,18 @@ public class ReflectiveEqualsMatcher<T> extends TypeSafeMatcher<T> {
 		}
 	}
 
+	public boolean isCustomBaseType(Class<?> clazz) {
+		return customBaseTypes.contains(clazz);
+	}
+
 	public boolean isBaseType(Class<?> clazz) {
 		return clazz.isPrimitive()
+			|| Boolean.class.isAssignableFrom(clazz)
 			|| Number.class.isAssignableFrom(clazz)
 			|| Character.class.isAssignableFrom(clazz)
 			|| String.class.isAssignableFrom(clazz)
-			|| clazz == Object.class;
+			|| clazz == Object.class
+			|| clazz == Class.class;
 	}
 
 	private List<Field> fields(Class<?> clazz) {
@@ -185,8 +201,9 @@ public class ReflectiveEqualsMatcher<T> extends TypeSafeMatcher<T> {
 		}
 
 	}
-	
+
 	private static class ComparisonException extends Exception {
-		
+
 	}
+
 }
