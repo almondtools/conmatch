@@ -31,6 +31,6 @@ Maven Dependency
 <dependency>
 	<groupId>com.github.almondtools</groupId>
 	<artifactId>conmatch</artifactId>
-	<version>0.1.7</version>
+	<version>0.1.13</version>
 </dependency>
 ```
