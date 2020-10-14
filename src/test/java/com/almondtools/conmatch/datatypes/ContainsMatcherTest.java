@@ -2,9 +2,9 @@ package com.almondtools.conmatch.datatypes;
 
 import static com.almondtools.conmatch.datatypes.ContainsMatcher.contains;
 import static com.almondtools.conmatch.datatypes.ContainsMatcher.empty;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
 
 import java.util.ArrayList;
 import java.util.HashSet;

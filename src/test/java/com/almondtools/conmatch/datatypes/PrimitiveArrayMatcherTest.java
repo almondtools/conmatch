@@ -9,8 +9,8 @@ import static com.almondtools.conmatch.datatypes.PrimitiveArrayMatcher.intArrayC
 import static com.almondtools.conmatch.datatypes.PrimitiveArrayMatcher.longArrayContaining;
 import static com.almondtools.conmatch.datatypes.PrimitiveArrayMatcher.shortArrayContaining;
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
 
 import org.hamcrest.StringDescription;
 import org.junit.Test;

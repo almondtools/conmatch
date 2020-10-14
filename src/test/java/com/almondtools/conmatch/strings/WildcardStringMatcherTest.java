@@ -1,9 +1,9 @@
 package com.almondtools.conmatch.strings;
 
 import static com.almondtools.conmatch.strings.WildcardStringMatcher.containsPattern;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
 
 import org.hamcrest.StringDescription;
 import org.junit.Test;

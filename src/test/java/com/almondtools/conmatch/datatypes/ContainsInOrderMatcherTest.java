@@ -1,10 +1,10 @@
 package com.almondtools.conmatch.datatypes;
 
 import static com.almondtools.conmatch.datatypes.ContainsInOrderMatcher.containsInOrder;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
 
 import java.util.ArrayList;
 import java.util.HashSet;
